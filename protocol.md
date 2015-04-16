@@ -36,11 +36,11 @@ happen all at once.
     <- [client-id, task-id, interval, type, ...]
     <- [client-id, task-id, interval, type, ...]
 
-To send a response, send a list with client-id, task-id, ms since task/request
-and message as a binary blob and it will be routed to dest by all nodes in the
-network.
+To send a response, send a list with client-id, task-id, timestamp and delay
+delts since task/request and message as a binary blob and it will be routed to
+dest by all nodes in the network.
 
-    -> [client-id, task-id, timestamp, message]
+    -> [client-id, task-id, timestamp, delta, message]
 
 When the server wishes to update the list of tasks, it will send down the
 diff.  Tasks to delete will simply contain the client-id and task-id and
@@ -61,5 +61,12 @@ interval of 0.
 
 The agent will respond as usual:
 
-    -> [client-id, task-id, timestamp, message]
+    -> [client-id, task-id, timestamp, delta, message]
 
+In the task, the "type" will be a lit package name.  If the agent doesn't have
+this code locally, it will download it via the lit protocol through the
+master.  The packages will be cached locally in a litdb and only updates will
+be downloaded.
+
+The tasks themselves will be run in workers (sub processes or threads) and
+have hot-reload ability if a task is updated.
