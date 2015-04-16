@@ -1,0 +1,28 @@
+agent = in-vm agent or remote poller agent (can be multi-tennant)
+master = aep
+
+agent connects with
+  hosts and capabilities
+
+master tells it which work to do
+
+if agent wants to gracefully disconnect, it asks to leave and
+master moves work to other agents
+
+if there were no others or disconnect was abrupt alarm
+
+agents that wish to update themselves can spawn the new version,
+ask to disconnect, and then exit.  The master will move their work
+to the new version before they exit.
+
+local agent config contains tenants and roles and local permissions overrides
+local agent has srv domains to query for aep data.
+proxy config is local config
+public key auth
+
+AEPs push config changes to agents, report on agent disconnects, and proxy
+data and commands to/from agents.
+
+download code on demand cache in local lit database.
+
+msgpack framing with routing information for messages (source and dest)
