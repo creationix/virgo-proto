@@ -21,10 +21,10 @@ local function join(host, port, path)
   local write, updateEncoder = writeWrap(rawWrite, httpCodec.encoder())
 
   -- Perform the websocket handshake
-  assert(websocketCodec.handshake({
+  local success, err = websocketCodec.handshake({
     host = host,
     path = path,
-    {"User-Agent", "Virgo-Agent v2.0.2 zxcv876sasd8796v9ajh"},
+    {"User-Agent", "Virgo-Agent v2.0 zxcv876sasd8796v9ajh"},
     {"X-Virgo-Client", "38457f7xfdsa internal,readonly"},
     {"X-Virgo-Client", "sdf678adf6ad external"},
     {"X-Virgo-Client", "vzpl2359vjzs external"},
@@ -39,7 +39,11 @@ local function join(host, port, path)
       error("Invalid request: " .. reason)
     end
     return res
-  end))
+  end)
+
+  if not success then
+    error(read() or err)
+  end
 
   -- Upgrade the protocol to websocket
   updateDecoder(websocketCodec.decode)

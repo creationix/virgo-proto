@@ -1,32 +1,36 @@
-local uv = require('uv')
 local bundle = require('luvi').bundle
-local httpCodec = require('http-codec')
-local createServer = require('coro-tcp').createServer
-local tlsWrap = require('coro-tls').wrap
-local wrapper = require('coro-wrapper')
-local readWrap, writeWrap = wrapper.reader, wrapper.writer
-local websocketCodec = require('websocket-codec')
 
-local opts = {
-  server = true,
-  key = bundle.readfile("key.pem"),
-  cert = bundle.readfile("cert.pem"),
-}
+require('weblit-websocket')
+require('weblit-app')
 
-createServer("0.0.0.0", 4433, function (rawRead, rawWrite, socket)
-  p("TCP client", socket)
-  -- wrap stream in tls
-  rawRead, rawWrite = tlsWrap(rawRead, rawWrite, opts)
-  p("tls client", socket)
+  .bind({
+    host = "0.0.0.0",
+    port = "4433",
+    tls = {
+      key = bundle.readfile("key.pem"),
+      cert = bundle.readfile("cert.pem"),
+    }
+  })
 
-  local read, updateDecoder = readWrap(rawRead, httpCodec.decoder())
-  local write, updateEncoder = writeWrap(rawWrite, httpCodec.encoder())
+  .use(require('weblit-logger'))
+  .use(require('weblit-auto-headers'))
+  .use(require('weblit-etag-cache'))
 
-  p(read())
-  write({code=404})
-  write("")
-  write()
-end)
+  .websocket({
+    protocol = "virgo/2.0",
+    filter = function(req)
+      p(req)
+      return true
+    end
+  }, function (read, write, socket)
+    p("websocket", socket)
+    for message in read do
+      write(message)
+    end
+    write()
+  end)
 
-print("Server listening as wss://localhost:4433/")
-uv.run()
+  .start()
+
+require('uv').run()
+
