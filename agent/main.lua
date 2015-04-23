@@ -9,6 +9,7 @@ local websocketCodec = require('websocket-codec')
 
 local function join(host, port, path)
   -- Make a TCP connection
+  p(string.format("Connecting to wss://%s:%d/%s...", host, port, path))
   local rawRead, rawWrite, socket = assert(connect(host, port))
   -- And wrap stream in tls
   p("connected", socket)
