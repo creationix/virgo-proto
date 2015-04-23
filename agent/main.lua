@@ -12,11 +12,9 @@ local function join(host, port, path)
   p(string.format("Connecting to wss://%s:%d/%s...", host, port, path))
   local rawRead, rawWrite, socket = assert(connect(host, port))
   -- And wrap stream in tls
-  p("connected", socket)
   rawRead, rawWrite = tlsWrap(rawRead, rawWrite, {
     ca = bundle.readfile("cert.pem")
   })
-  p("tls session", socket)
 
   local read, updateDecoder = readWrap(rawRead, httpCodec.decoder())
   local write, updateEncoder = writeWrap(rawWrite, httpCodec.encoder())
@@ -54,7 +52,11 @@ local function join(host, port, path)
 end
 
 coroutine.wrap(function ()
-  p(join("localhost", 4433, "/"))
+  local read, write, socket = join("localhost", 4433, "/")
+  p("connected", socket)
+  for data in read do
+    p(data)
+  end
 end)()
 
 uv.run()
