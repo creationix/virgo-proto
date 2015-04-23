@@ -1,7 +1,7 @@
+local uv = require('uv')
+local bundle = require('luvi').bundle
 local httpCodec = require('http-codec')
-local pathJoin = require('luvi').path.join
 local connect = require('coro-tcp').connect
-local fs = require('coro-fs')
 local tlsWrap = require('coro-tls').wrap
 local wrapper = require('coro-wrapper')
 local readWrap, writeWrap = wrapper.reader, wrapper.writer
@@ -11,9 +11,11 @@ local function join(host, port, path)
   -- Make a TCP connection
   local rawRead, rawWrite, socket = assert(connect(host, port))
   -- And wrap stream in tls
+  p("connected", socket)
   rawRead, rawWrite = tlsWrap(rawRead, rawWrite, {
-    cert = fs.readFile(pathJoin(module.dir, "cert.pem")),
+    ca = bundle.readfile("cert.pem")
   })
+  p("tls session", socket)
 
   local read, updateDecoder = readWrap(rawRead, httpCodec.decoder())
   local write, updateEncoder = writeWrap(rawWrite, httpCodec.encoder())
@@ -47,5 +49,7 @@ local function join(host, port, path)
 end
 
 coroutine.wrap(function ()
-  p(join("localhost", 6000, "/"))
+  p(join("localhost", 4433, "/"))
 end)()
+
+uv.run()
