@@ -1,30 +1,17 @@
-return function (req, read, write, socket)
+-- This is called every time a new websocket client connects.
+return function (req, read, write)
   local agent = {}
-  local clients = {}
-  agent.clients = clients
-  local headers = req.headers
-  for i = 1, #headers do
-    local key, value = unpack(headers[i])
-    key = key:lower()
-    if key == "user-agent" then
-      local version, id = value:match("Virgo%-Agent v(%d[%d.]*) ([^ ]+)")
-      if version then
-        agent.id = id
-        agent.version = version
-      end
-    elseif key == "x-virgo-client" then
-      local id, props = value:match("([^ ]+) (.*)")
-      local client = {}
-      for prop in props:gmatch("[^ ,]+") do
-        client[prop] = true
-      end
-      clients[id] = client
-    end
+  local userAgent = req.headers["user-agent"]
+  if not userAgent then
+    error("User-Agent required")
   end
-  p("websocket", agent)
-  if agent.version ~= "2.0" then
+  local version, id = userAgent:match("Virgo%-Agent v(%d[%d.]*) ([^ ]+)")
+  if version ~= "2.0" then
     error("Virgo-Agent 2.0 required in User-Agent")
   end
+  agent.id = id
+  agent.version = version
+  p("websocket", agent)
 
   write()
   for message in read do

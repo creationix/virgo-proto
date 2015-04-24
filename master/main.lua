@@ -16,6 +16,7 @@ require('weblit-app')
   .use(require('weblit-auto-headers'))
 
   .websocket({
+    path = "/v2/socket",
     protocol = "virgo/2.0",
   }, require('./protocol'))
 

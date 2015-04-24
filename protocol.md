@@ -36,11 +36,11 @@ happen all at once.
     <- [client-id, task-id, interval, type, ...]
     <- [client-id, task-id, interval, type, ...]
 
-To send a response, send a list with client-id, task-id, timestamp and delay
-delts since task/request and message as a binary blob and it will be routed to
+To send a response, send a list with client-id, task-id, time-stamp and delay
+delta since task/request and message as a binary blob and it will be routed to
 dest by all nodes in the network.
 
-    -> [client-id, task-id, timestamp, delta, message]
+    -> [client-id, task-id, time-stamp, delta, message]
 
 When the server wishes to update the list of tasks, it will send down the
 diff.  Tasks to delete will simply contain the client-id and task-id and

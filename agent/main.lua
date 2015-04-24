@@ -24,9 +24,6 @@ local function join(host, port, path)
     host = host,
     path = path,
     {"User-Agent", "Virgo-Agent v2.0 zxcv876sasd8796v9ajh"},
-    {"X-Virgo-Client", "38457f7xfdsa internal,readonly"},
-    {"X-Virgo-Client", "sdf678adf6ad external"},
-    {"X-Virgo-Client", "vzpl2359vjzs external"},
     protocol = "virgo/2.0",
   }, function (req)
     write(req)
@@ -52,7 +49,7 @@ local function join(host, port, path)
 end
 
 coroutine.wrap(function ()
-  local read, write, socket = join("localhost", 4433, "/")
+  local read, write, socket = join("localhost", 4433, "/v2/socket")
   p("connected", socket)
   for data in read do
     p(data)
