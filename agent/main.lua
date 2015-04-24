@@ -6,10 +6,11 @@ local tlsWrap = require('coro-tls').wrap
 local wrapper = require('coro-wrapper')
 local readWrap, writeWrap = wrapper.reader, wrapper.writer
 local websocketCodec = require('websocket-codec')
+local urlParse = require('url').parse
 
 local function join(host, port, path)
   -- Make a TCP connection
-  p(string.format("Connecting to wss://%s:%d/%s...", host, port, path))
+  p(string.format("Connecting to wss://%s:%d%s...", host, port, path))
   local rawRead, rawWrite, socket = assert(connect(host, port))
   -- And wrap stream in tls
   rawRead, rawWrite = tlsWrap(rawRead, rawWrite, {
@@ -49,11 +50,33 @@ local function join(host, port, path)
 end
 
 coroutine.wrap(function ()
-  local read, write, socket = join("localhost", 4433, "/v2/socket")
-  p("connected", socket)
-  for data in read do
-    p(data)
+  local config = require('./conf')
+
+  p(config)
+  local endpoints = config.endpoints
+  for i = 1, #endpoints do
+    local uri = urlParse(endpoints[i])
+    assert(uri.protocol == "wss", "endpoints must be wss protocol")
+    local read, write, socket = join(uri.hostname, tonumber(uri.port or 443), uri.pathname)
+    p("connected", socket)
+
+    local client = {
+      index = 1, -- Used
+      id = "1234987ghjxcmnbwquiyh2",
+      capabilities = ""
+    }
+    p("asking for work for client", client)
+    for data in read do
+      p(data)
+    end
+
   end
 end)()
 
 uv.run()
+
+--[[
+Client -> Server Messages:
+
+Server -> Client Messages:
+]]
