@@ -1,9 +1,9 @@
+local config = require('config')
+local makeSocket = require('socket')
 
 coroutine.wrap(function ()
-  local conf = require('./conf')
-  local connect = require('connection')
-  for i = 1, #conf.endpoints do
-    p(connect(conf.endpoints[i], conf.ca))
+  for i = 1, #config.endpoints do
+    p(makeSocket(config.endpoints[i], config.ca))
   end
 end)()
 

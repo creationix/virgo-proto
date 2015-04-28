@@ -1,4 +1,21 @@
------BEGIN CERTIFICATE-----
+return {
+  -- Path to external config (Where the location property would normally go)
+  external = "/etc/virgo-agent/config.lua",
+
+  -- Hint to tell AEP what data-center we're in. This implies we are multi-
+  -- tenant and can perform remote-poll tasks.
+  location = 'creationix-home',
+
+  -- List of endpoints to connect to.
+  -- The agent will heartbeat and ntp with all endpoints, but will only
+  -- send data up to the lowest latency connection.
+  endpoints = {
+    "wss://localhost:4433/v2/socket"
+  },
+
+  -- A common certificate is used to authenticate all endpoints.
+  -- In this case it's the certificate itself since it's self-signed.
+  ca = [[-----BEGIN CERTIFICATE-----
 MIIEXjCCA0agAwIBAgIJAMHNKgrl2cLiMA0GCSqGSIb3DQEBBQUAMHwxCzAJBgNV
 BAYTAlVTMQ4wDAYDVQQIEwVUZXhhczERMA8GA1UEBxMIUmVkIExpY2sxEzARBgNV
 BAoTCkNyZWF0aW9uaXgxEjAQBgNVBAMTCWxvY2FsaG9zdDEhMB8GCSqGSIb3DQEJ
@@ -24,3 +41,6 @@ SHob/Zp3tTMqulLDpY66HlkQrCr4F6HVQdTnnHQKZdx9EYuDPYe8UsCnAnv33rmy
 x6OKbx5GSCW5U9SP2MNz+L6YZtTL44RLAKNa4MTrvKYYpqpwK+3IC0E5zkQPhRgx
 S+kVZvkyvR8G28074bWLlnmY
 -----END CERTIFICATE-----
+]]
+
+}

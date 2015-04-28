@@ -5,11 +5,10 @@ return function (req, read, write)
   if not userAgent then
     error("User-Agent required")
   end
-  local version, id = userAgent:match("Virgo%-Agent v(%d[%d.]*) ([^ ]+)")
+  local version = userAgent:match("Virgo%-Agent v(%d[%d.]*)")
   if version ~= "2.0" then
     error("Virgo-Agent 2.0 required in User-Agent")
   end
-  agent.id = id
   agent.version = version
   p("websocket", agent)
 

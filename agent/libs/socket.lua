@@ -27,7 +27,7 @@ return function (url, ca)
   local success, err = websocketCodec.handshake({
     host = uri.host,
     path = uri.path,
-    {"User-Agent", "Virgo-Agent v2.0 unbound"},
+    {"User-Agent", "Virgo-Agent v2.0"},
     protocol = "virgo/2.0",
   }, function (req)
     write(req)
