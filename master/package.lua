@@ -7,5 +7,6 @@ return {
     "luvit/pretty-print@1.0.0",
     "creationix/coro-fs@1.2.3",
     "creationix/weblit@0.2.0",
+    "creationix/msgpack@1.0.1",
   },
 }

@@ -26,3 +26,9 @@ data and commands to/from agents.
 download code on demand cache in local lit database.
 
 msgpack framing with routing information for messages (source and dest)
+
+Use repl to control server in prototype
+use getters in _G in repl for easy command syntax
+
+eventually add color to repl
+fix multiple paste bug in repl

@@ -8,6 +8,9 @@ local readWrap, writeWrap = wrapper.reader, wrapper.writer
 local websocketCodec = require('websocket-codec')
 local urlParse = require('url').parse
 
+local conf = require('./conf')
+
+
 local function join(host, port, path)
   -- Make a TCP connection
   p(string.format("Connecting to wss://%s:%d%s...", host, port, path))
