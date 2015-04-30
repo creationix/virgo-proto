@@ -1,4 +1,3 @@
-local bundle = require('luvi').bundle
 
 require('weblit-websocket')
 require('weblit-app')
@@ -7,8 +6,8 @@ require('weblit-app')
     host = "0.0.0.0",
     port = 4433,
     tls = {
-      key = bundle.readfile("key.pem"),
-      cert = bundle.readfile("cert.pem"),
+      key = module:load("./key.pem"),
+      cert = module:load("./cert.pem"),
     }
   })
 
@@ -22,5 +21,4 @@ require('weblit-app')
 
   .start()
 
-require('uv').run()
 
