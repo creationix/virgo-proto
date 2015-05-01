@@ -21,4 +21,4 @@ require('weblit-app')
 
   .start()
 
-
+require('uv').run()
