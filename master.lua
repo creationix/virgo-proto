@@ -1,4 +1,5 @@
 
+
 require('weblit-websocket')
 require('weblit-app')
 
@@ -6,8 +7,8 @@ require('weblit-app')
     host = "0.0.0.0",
     port = 4433,
     tls = {
-      key = module:load("./key.pem"),
-      cert = module:load("./cert.pem"),
+      key = module:load("key.pem"),
+      cert = module:load("cert.pem"),
     }
   })
 
@@ -17,7 +18,7 @@ require('weblit-app')
   .websocket({
     path = "/v2/socket",
     protocol = "virgo/2.0",
-  }, require('./protocol'))
+  }, require('agent-handler'))
 
   .start()
 

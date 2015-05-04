@@ -32,3 +32,22 @@ use getters in _G in repl for easy command syntax
 
 eventually add color to repl
 fix multiple paste bug in repl
+
+---------------------------------------------
+
+
+Prototype basic AEP
+
+[X] Listens on wss:// port with virgo/2.0 subprotocol and custom ssl cert.
+[ ] Assigns tasks to agents upon connection.
+[ ] Pushes down changes to checks/tasks to connected agents in response to API events.
+[ ] Routes agent reports / events to alerting system.
+[ ] Creates events when agents disconnect or have connection issues.
+[ ] Serves code for new tasks the agent isn't yet programmed to do.
+
+Prototype generic agent
+
+[X] Connects to AEP(s) over wss:// and verifies custom cert to authenticate server.
+[ ] Tells AEP about it's capabilities and location (whatever is needed to assign it proper work)
+[ ] Accepts generic tasks from AEP, performs tasks and reports back results.
+[ ] Downloads new code when the AEP assigns a task the agent has never run before.
