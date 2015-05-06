@@ -8,41 +8,63 @@ local intervals = {}
 local programs = {}
 
 local api = require('uv')
+local read, write
 
-local nextCheck
-local function recheck()
-  for i = 1, #intervals do
-    local name, start, interval = unpack(intervals[i])
-    if not nextCheck or start < nextCheck then
-      nextCheck = start
+local function run(name)
+  local fn = programs[name]
+  p("Running", name, fn)
+  local result = {name, fn(api)}
+  write({
+    opcode = 2,
+    payload = msgpack.encode(result)
+  })
+end
+
+local timer = uv.new_timer()
+local function tick()
+  timer:stop()
+  local smallest
+  local now = uv.now()
+  for name, pair in pairs(intervals) do
+    local start, interval = unpack(pair)
+    if start <= now then
+      while start <= now do
+        start = start + interval
+      end
+      pair[1] = start
+      run(name)
     end
 
-
-end
-
-local function run(name, bytecode, interval)
-  local fn = assert(loadstring(bytecode, name))
-  print("Running task: " .. name)
-  if interval then
-    programs[name] = fn
-    intervals[#intervals + 1] = {
-      name, uv.now() + interval, interval,
-    }
+    if not smallest or start < smallest then
+      smallest = start
+    end
   end
-  local result = fn(api)
-  p("result", result)
+  if not smallest then return end
+  local delay = smallest - now
+  timer:start(delay * 1000, 0, tick)
 end
 
+
+local function compile(code, name)
+  local fn = assert(loadstring(code, name))
+  return fn
+end
 
 coroutine.wrap(function ()
   for i = 1, #config.endpoints do
-    local read, write = makeSocket(config.endpoints[i], config.ca)
+    read, write = makeSocket(config.endpoints[i], config.ca)
     for message in read do
       assert(message.opcode == 2)
-      local task = msgpack.decode(message.payload)
-      run(unpack(task))
-      task.task = loadstring(task.task, task.name)
-      p(task)
+      local task, used = msgpack.decode(message.payload)
+      assert(used == #message.payload)
+      local name, code, interval = unpack(task)
+      programs[name] = compile(code, name)
+      if interval then
+        intervals[name] = {uv.now(), interval}
+        tick()
+      else
+        run(name)
+      end
     end
     write()
   end

@@ -32,7 +32,7 @@ local tasks = {
         title = api.get_process_title(),
         mem = api.get_total_memory(),
         cpu = api.cpu_info(),
-        inet = api.interface_addresses,
+        inet = api.interface_addresses(),
         cwd = api.cwd(),
         exe = api.exepath(),
       }
@@ -43,11 +43,11 @@ local tasks = {
       return {
         rss = api.resident_set_memory(),
         rusage = api.getrusage(),
-        loadavg = api.loadavg(),
+        loadavg = {api.loadavg()},
         uptime = api.uptime()
       }
     end, true),
-    1000
+    5
   }
 }
 
