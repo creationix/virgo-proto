@@ -51,3 +51,7 @@ Prototype generic agent
 [ ] Tells AEP about it's capabilities and location (whatever is needed to assign it proper work)
 [ ] Accepts generic tasks from AEP, performs tasks and reports back results.
 [ ] Downloads new code when the AEP assigns a task the agent has never run before.
+
+
+update issue to show focus on remote poller in private networks
+with using existing aep
