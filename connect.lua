@@ -77,15 +77,23 @@ local function connect(srv)
   assert(resp.result)
   local heartbeat_interval = resp.result.heartbeat_interval
   p("heartbeat_interval", heartbeat_interval)
+  -- write {
+  --   v = '1',
+  --   source = uuid,
+  --   target = 'endpoint',
+  --   method = 'config_file.post',
+  --   id = '0',
+  --   params = { dummy = 1 },
+  -- }
+
   write {
     v = '1',
     source = uuid,
     target = 'endpoint',
-    method = 'config_file.post',
-    id = '0',
-    params = { dummy = 1 },
+    method = 'check_schedule.get',
+    id = '1',
+    params = { blah = 1 },
   }
-
 
   resp = read()
   p(resp)
