@@ -9,6 +9,9 @@ local function runCheck(attributes, config, callback)
 
   local done
   local handles = {}
+  local result = {}
+
+  -- Register a uv_handle to be cleaned up when done.
   local function register(handle)
     if done then
       return handle:close()
@@ -16,7 +19,13 @@ local function runCheck(attributes, config, callback)
     handles[#handles + 1] = handle
   end
 
-  local function cleanup(err, result)
+  -- Set part of the result data.
+  local function set(key, value)
+    result[key] = value
+  end
+
+  -- Called when done with optional error reason
+  local function finish(err)
     if done then return end
     done = true
     for i = 1, #handles do
@@ -28,25 +37,38 @@ local function runCheck(attributes, config, callback)
   local timer = uv.new_timer()
   register(timer)
   timer:start(attributes.timeout, 0, function ()
-    return cleanup("ETIMEOUT: Check did not finish within " .. attributes.timeout .. "ms")
+    return finish("ETIMEOUT: Check did not finish within " .. attributes.timeout .. "ms")
   end)
 
   coroutine.wrap(function ()
-    local success, result = pcall(fn, attributes, config, register)
-    if success then
-      return cleanup(nil, result)
-    else
-      return cleanup(result)
+    local success, err = pcall(fn, attributes, config, register, set)
+    if not success then
+      return finish(err)
     end
+    return finish()
   end)()
 end
 
 runCheck({
-  target = "127.0.0.1",
+  id = 42,
+  target = "creationix.com",
+  family = "inet4",
+  -- family = "inet6", -- Need ISP with ipv6 to test
   module = "tcp",
-  timeout = 20,
+  timeout = 200,
 }, {
-  port = 22,
-  banner_match = "SSH",
-  -- body_match = "stuff"
+  port = 80,
+  send_body = "GET / HTTP/1.0\r\n\r\n",
+  body_match = "^HTTP/1\\.[10] 200 OK"
 }, p)
+
+-- runCheck({
+--   id = 42,
+--   target = "127.0.0.1",
+--   family = "inet4",
+--   module = "tcp",
+--   timeout = 2000,
+-- }, {
+--   port = 22,
+--   banner_match = "SSH",
+-- }, p)
