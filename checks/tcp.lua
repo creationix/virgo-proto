@@ -1,5 +1,6 @@
 local uv = require('uv')
 local connect = require('coro-net').connect
+local rex = require('rex')
 
 local function getaddrinfo(host, port)
   local thread = coroutine.running()
@@ -86,7 +87,7 @@ return function (attributes, config, register)
         body = body .. chunk
       end
     end
-    -- TODO: match banner
+    banner_match = rex.match(banner, config.banner_match)
   end
 
   -- Optionally write send_body if requested
@@ -110,7 +111,7 @@ return function (attributes, config, register)
         break
       end
     end
-    -- TODO: match body
+    body_match = rex.match(body, config.body_match)
   end
 
   return {
