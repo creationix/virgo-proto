@@ -31,6 +31,7 @@ local function runCheck(attributes, config, callback)
     for i = 1, #handles do
       if not handles[i]:is_closing() then handles[i]:close() end
     end
+    result.error = err
     return callback(err, result)
   end
 
