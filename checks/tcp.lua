@@ -1,5 +1,6 @@
 local uv = require('uv')
 local connect = require('coro-net').connect
+local tlsWrap = require('coro-tls').wrap
 local rex = require('rex')
 
 local function getaddrinfo(host, port, family)
@@ -65,6 +66,11 @@ return function (attributes, config, register, set)
   })
   set("tt_connect", uv.now() - start)
   register(socket)
+
+  if config.use_ssl then
+    read, write = tlsWrap(read, write, {})
+    set("tt_ssl", uv.now() - start)
+  end
 
   -- Optionally read banner if banner_match is requested
   if config.banner_match then
