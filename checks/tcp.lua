@@ -51,6 +51,7 @@ tt_firstbyte: Uint32
 ----------------------------------------------------------------------------]]--
 return function (attributes, config, register, set)
   local start = uv.now()
+  local body, banner
   local tt_firstbyte
 
   -- Resolve hostname and record time spent
@@ -67,7 +68,7 @@ return function (attributes, config, register, set)
   set("tt_connect", uv.now() - start)
   register(socket)
 
-  if config.use_ssl then
+  if config.ssl then
     read, write = tlsWrap(read, write, {})
     set("tt_ssl", uv.now() - start)
   end
